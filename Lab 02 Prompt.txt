@@ -1,0 +1,20 @@
+I am teaching a 2-hour Node.js theory class. Based on the following topics: Node.js Architecture (Event Loop & Non-blocking I/O) , Core Modules (fs, http) , and NPM (package.json & third-party modules) , please generate a beginner-friendly project.
++4
+
+Project Requirements: 1. Setup: Show how to initialize the project with npm init to create a package.json. 2. Dependencies: Use NPM to install the axios package. 3. Core Functionality: Write a script that uses axios to fetch weather data from a public API (like Open-Meteo) using an Asynchronous Callback/Promise. 4. File System: Use the fs module to save this weather data into a local file named weather_log.txt. 5. Server: Use the http module to create a simple server that reads this file and displays the weather on localhost:3000. 6. Explanation: For each part of the code, add comments explaining how the Event Loop is handling these tasks without blocking the execution.
+
+
+
+
+Is Project se Bachay Kya Seekhein ge?
+
+Practical NPM: Wo package.json ko bante aur packages install hote dekhein ge.
++1
+
+
+Architecture ka Saboot: Jab API se data fetch ho raha hoga, to wo samjhein ge ke Node.js wait nahi karta balkeh Event Loop agly task par chala jata hai.
++1
+
+
+Built-in vs External: Unhein farq samajh aye ga ke fs (Core) aur axios (Third-party) mein kya farq hai.
++1
