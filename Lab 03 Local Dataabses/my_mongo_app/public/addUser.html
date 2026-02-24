@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add/Edit User</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 id="formHeading">Add New User</h1>
+    <form id="userForm">
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="number" name="age" placeholder="Age">
+      <button type="submit" id="submitBtn">Save User</button>
+      <button type="button" onclick="location.href='index.html'">Back to Home</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("userForm");
+    const formHeading = document.getElementById("formHeading");
+    const submitBtn = document.getElementById("submitBtn");
+
+    // Check if URL has userId parameter for editing
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get("id");
+
+    if(userId){
+      // Edit mode
+      formHeading.textContent = "Edit User";
+      submitBtn.textContent = "Update User";
+
+      // Fetch user data
+      fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(user => {
+        form.name.value = user.name;
+        form.email.value = user.email;
+        form.age.value = user.age;
+      });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        age: form.age.value
+      };
+
+      if(userId){
+        // Update user
+        await fetch(`/api/users/${userId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+      } else {
+        // Add new user
+        await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+      }
+
+      window.location.href = "viewUsers.html"; // redirect to view users
+    });
+  </script>
+</body>
+</html>

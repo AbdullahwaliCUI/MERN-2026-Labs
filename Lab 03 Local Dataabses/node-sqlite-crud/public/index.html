@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add/Edit User</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2 id="formHeading">Add User</h2>
+
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="text" id="phone" placeholder="Phone" required>
+    <button type="submit">Save User</button>
+  </form>
+
+  <a href="users.html">View Users</a>
+</div>
+
+<script>
+const form = document.getElementById("userForm");
+const heading = document.getElementById("formHeading");
+
+let editUserId = null;
+
+// Check if editing (saved from users.html)
+if(localStorage.getItem("editUserId")){
+  editUserId = localStorage.getItem("editUserId");
+  document.getElementById("name").value = localStorage.getItem("editName");
+  document.getElementById("phone").value = localStorage.getItem("editPhone");
+  heading.textContent = "Edit User";
+  form.querySelector("button").textContent = "Update User";
+  localStorage.clear();  // clear after reading
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = {
+    name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value
+  };
+
+  if(editUserId){
+    await fetch("/users/" + editUserId, {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
+    });
+    alert("User updated");
+  } else {
+    await fetch("/users", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
+    });
+    alert("User added");
+  }
+
+  form.reset();
+  window.location.href = "users.html";
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Users List</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container-users">
+  <h2>All Users</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="userList"></tbody>
+  </table>
+  <a href="index.html" class="back-link">Add New User</a>
+</div>
+
+<script>
+async function loadUsers(){
+  const res = await fetch("/users");
+  const users = await res.json();
+  const list = document.getElementById("userList");
+  list.innerHTML = "";
+
+  users.forEach(u => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${u.name}</td>
+      <td>${u.phone}</td>
+      <td>
+        <button onclick="editUser('${u.id}', '${u.name}', '${u.phone}')">Edit</button>
+        <button onclick="deleteUser('${u.id}')">Delete</button>
+      </td>
+    `;
+    list.appendChild(tr);
+  });
+}
+
+function editUser(id, name, phone){
+  localStorage.setItem("editUserId", id);
+  localStorage.setItem("editName", name);
+  localStorage.setItem("editPhone", phone);
+  window.location.href = "index.html";
+}
+
+async function deleteUser(id){
+  if(confirm("Are you sure?")){
+    await fetch("/users/" + id, { method: "DELETE" });
+    loadUsers();
+  }
+}
+
+loadUsers();
+</script>
+</body>
+</html>

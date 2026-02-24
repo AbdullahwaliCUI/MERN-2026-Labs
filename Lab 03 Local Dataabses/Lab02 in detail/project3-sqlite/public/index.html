@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student CRUD — SQLite</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f0f2f5; color: #333; }
+    header { background: #9c27b0; color: white; padding: 16px 24px; font-size: 1.4rem; font-weight: bold; }
+    .container { max-width: 900px; margin: 30px auto; padding: 0 16px; }
+    .card { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1); padding: 24px; margin-bottom: 24px; }
+    h2 { margin-bottom: 16px; font-size: 1.1rem; color: #555; }
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .form-row input { flex: 1; min-width: 140px; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+    .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; }
+    .btn-primary { background: #9c27b0; color: white; }
+    .btn-primary:hover { background: #7b1fa2; }
+    .btn-warning { background: #ff9800; color: white; }
+    .btn-warning:hover { background: #e68900; }
+    .btn-danger  { background: #f44336; color: white; }
+    .btn-danger:hover  { background: #d32f2f; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #f8f8f8; font-weight: 600; }
+    tr:hover { background: #fafafa; }
+    .actions { display: flex; gap: 8px; }
+    #status { color: #888; font-size: 0.9rem; margin-bottom: 8px; min-height: 20px; }
+  </style>
+</head>
+<body>
+  <header>Student Manager — SQLite (Port 3002)</header>
+  <div class="container">
+    <div class="card">
+      <h2>Add New Student</h2>
+      <div class="form-row">
+        <input type="text"   id="name"   placeholder="Name" />
+        <input type="number" id="age"    placeholder="Age" />
+        <input type="text"   id="course" placeholder="Course" />
+        <button class="btn btn-primary" id="addBtn">Add Student</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>All Students</h2>
+      <div id="status">Loading…</div>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Name</th><th>Age</th><th>Course</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3002/api/students';
+
+    async function loadStudents() {
+      document.getElementById('status').textContent = 'Loading…';
+      try {
+        const res = await fetch(API);
+        if (!res.ok) throw new Error('Failed to fetch');
+        const students = await res.json();
+        const tbody = document.getElementById('tbody');
+        tbody.innerHTML = '';
+        students.forEach((s, i) => {
+          const tr = document.createElement('tr');
+          const tdNum    = document.createElement('td'); tdNum.textContent    = i + 1;
+          const tdName   = document.createElement('td'); tdName.textContent   = s.name;
+          const tdAge    = document.createElement('td'); tdAge.textContent    = s.age;
+          const tdCourse = document.createElement('td'); tdCourse.textContent = s.course;
+          const tdAction = document.createElement('td'); tdAction.className   = 'actions';
+          const btnUpdate = document.createElement('button');
+          btnUpdate.textContent = 'Update';
+          btnUpdate.className   = 'btn btn-warning';
+          btnUpdate.addEventListener('click', () =>
+            updateStudent(s.id, s.name, s.age, s.course));
+          const btnDelete = document.createElement('button');
+          btnDelete.textContent = 'Delete';
+          btnDelete.className   = 'btn btn-danger';
+          btnDelete.addEventListener('click', () => deleteStudent(s.id));
+          tdAction.appendChild(btnUpdate);
+          tdAction.appendChild(btnDelete);
+          tr.append(tdNum, tdName, tdAge, tdCourse, tdAction);
+          tbody.appendChild(tr);
+        });
+        document.getElementById('status').textContent = `${students.length} student(s) found.`;
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error: ' + err.message;
+        alert('Failed to load students: ' + err.message);
+      }
+    }
+
+    async function addStudent() {
+      const name   = document.getElementById('name').value.trim();
+      const age    = parseInt(document.getElementById('age').value);
+      const course = document.getElementById('course').value.trim();
+      if (!name || !age || !course) { alert('Please fill in all fields.'); return; }
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, age, course })
+        });
+        if (!res.ok) throw new Error('Failed to add student');
+        document.getElementById('name').value   = '';
+        document.getElementById('age').value    = '';
+        document.getElementById('course').value = '';
+        loadStudents();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    async function updateStudent(id, name, age, course) {
+      const newName   = prompt('New name:', name);
+      if (newName === null) return;
+      const newAge    = prompt('New age:', age);
+      if (newAge === null) return;
+      const newCourse = prompt('New course:', course);
+      if (newCourse === null) return;
+      try {
+        const res = await fetch(`${API}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName, age: parseInt(newAge), course: newCourse })
+        });
+        if (!res.ok) throw new Error('Failed to update student');
+        loadStudents();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    async function deleteStudent(id) {
+      if (!confirm('Are you sure you want to delete this student?')) return;
+      try {
+        const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Failed to delete student');
+        loadStudents();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    document.getElementById('addBtn').addEventListener('click', addStudent);
+    window.onload = loadStudents;
+  </script>
+</body>
+</html>

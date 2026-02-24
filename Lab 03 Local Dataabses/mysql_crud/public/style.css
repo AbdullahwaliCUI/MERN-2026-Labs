@@ -1,0 +1,175 @@
+/* ================= GLOBAL ================= */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.container {
+  width: 500px;
+  background: #ffffff;
+  margin-top: 50px;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* ================= HEADINGS ================= */
+h2#formHeading {
+  text-align: center;
+  color: #34495e;
+  margin-bottom: 30px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* ================= FORM ================= */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form input {
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+form input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0,123,255,0.3);
+  outline: none;
+}
+
+/* ================= BUTTONS ================= */
+button[type="submit"] {
+  background: linear-gradient(135deg, #1abc9c, #16a085);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(135deg, #16a085, #149174);
+  transform: translateY(-2px);
+}
+
+/* ================= LINKS ================= */
+a {
+  display: block;
+  text-align: center;
+  margin-top: 25px;
+  color: #3498db;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ================= USERS LIST ================= */
+.container-users {
+  width: 700px;
+  margin: 50px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* Heading */
+.container-users h2 {
+  text-align: center;
+  font-size: 28px;
+  color: #2c3e50;
+  margin-bottom: 25px;
+}
+
+/* Table Styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th, table td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+table th {
+  background: #3498db;
+  color: white;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+table tr {
+  background: #f8f9fa;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+table tr:nth-child(even){
+  background: #e9ecef;
+}
+
+/* Buttons inside table */
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: #f1c40f;
+  color: white;
+  margin-right: 5px;
+}
+
+.edit-btn:hover {
+  background: #d4ac0d;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+/* Back Link */
+a.back-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: 600;
+  color: #3498db;
+  text-decoration: none;
+}
+
+a.back-link:hover {
+  text-decoration: underline;
+}
+/* Wrap buttons in flex container */
+td > div.button-group {
+  display: flex;
+  gap: 8px; /* Space between Edit and Delete */
+}

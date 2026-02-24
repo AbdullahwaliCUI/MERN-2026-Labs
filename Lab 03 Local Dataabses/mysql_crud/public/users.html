@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Users List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: #f4f7f8;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container-users {
+      background: #fff;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 900px;
+      transition: all 0.3s ease;
+    }
+
+    .container-users:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    thead {
+      background-color: #007BFF;
+      color: #fff;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      font-size: 15px;
+    }
+
+    tbody tr:hover {
+      background-color: #f1f7ff;
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .edit-btn {
+      background-color: #28a745;
+      color: white;
+      margin-right: 5px;
+    }
+
+    .edit-btn:hover {
+      background-color: #218838;
+      transform: translateY(-1px);
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background-color: #c82333;
+      transform: translateY(-1px);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 15px;
+      text-decoration: none;
+      color: #007BFF;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .back-link:hover {
+      color: #0056b3;
+    }
+
+    @media(max-width: 600px){
+      th, td {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 5px 10px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-users">
+  <h2>All Users</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="userList">
+      <!-- Users will be injected here -->
+    </tbody>
+  </table>
+
+  <a href="index.html" class="back-link">Back to Add User</a>
+</div>
+
+<script>
+async function loadUsers() {
+  const res = await fetch("/users");
+  const users = await res.json();
+
+  const list = document.getElementById("userList");
+  list.innerHTML = "";
+
+  users.forEach(user => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${user.name}</td>
+      <td>${user.email}</td>
+      <td>${user.phone}</td>
+      <td>
+        <button class="edit-btn" onclick="editUser(${user.id}, '${user.name}', '${user.email}', '${user.phone}')">Edit</button>
+        <button class="delete-btn" onclick="deleteUser(${user.id})">Delete</button>
+      </td>
+    `;
+    list.appendChild(tr);
+  });
+}
+
+async function deleteUser(id){
+  if(confirm("Are you sure you want to delete this user?")){
+    await fetch("/users/" + id, { method: "DELETE" });
+    loadUsers();
+  }
+}
+
+function editUser(id, name, email, phone){
+  localStorage.setItem("editUserId", id);
+  localStorage.setItem("editName", name);
+  localStorage.setItem("editEmail", email);
+  localStorage.setItem("editPhone", phone);
+  window.location.href = "index.html";
+}
+
+loadUsers();
+</script>
+
+</body>
+</html>

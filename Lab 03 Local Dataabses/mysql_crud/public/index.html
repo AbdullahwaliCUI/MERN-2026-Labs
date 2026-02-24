@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add/Edit User</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: #f4f7f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 450px;
+      transition: all 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 5px rgba(0,123,255,0.3);
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    a {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      color: #007BFF;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    a:hover {
+      color: #0056b3;
+    }
+
+    @media(max-width: 500px){
+      .container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2 id="formHeading">Add User</h2>
+
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="text" id="phone" placeholder="Phone" required>
+    <button type="submit">Save User</button>
+  </form>
+
+  <a href="users.html">View Users</a>
+</div>
+
+<script>
+const form = document.getElementById("userForm");
+const heading = document.getElementById("formHeading");
+
+// Check if editing
+let editUserId = localStorage.getItem("editUserId");
+
+if(editUserId){
+  document.getElementById("name").value = localStorage.getItem("editName");
+  document.getElementById("email").value = localStorage.getItem("editEmail");
+  document.getElementById("phone").value = localStorage.getItem("editPhone");
+  heading.textContent = "Edit User";
+  form.querySelector("button").textContent = "Update User";
+
+  // Clear edit info so next visit shows Add User
+  localStorage.removeItem("editUserId");
+  localStorage.removeItem("editName");
+  localStorage.removeItem("editEmail");
+  localStorage.removeItem("editPhone");
+}
+
+form.addEventListener("submit", async function(e){
+  e.preventDefault();
+  const data = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value
+  };
+
+  if(editUserId){
+    await fetch("/users/" + editUserId, {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
+    });
+    alert("User Updated");
+  } else {
+    await fetch("/users", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(data)
+    });
+    alert("User Added");
+  }
+
+  form.reset();
+  window.location.href = "users.html";
+});
+</script>
+
+</body>
+</html>

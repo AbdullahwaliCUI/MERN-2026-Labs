@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Users</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>All Users</h1>
+    <ul id="userList"></ul>
+    <button class="btn-back" onclick="location.href='index.html'">Back to Home</button>
+  </div>
+
+  <script>
+    const userList = document.getElementById("userList");
+
+    async function fetchUsers() {
+      const res = await fetch("/api/users");
+      const users = await res.json();
+      userList.innerHTML = "";
+      users.forEach(user => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          ${user.name} | ${user.email} | ${user.age}
+          <span>
+            <button class="editBtn">Edit</button>
+            <button class="deleteBtn">Delete</button>
+          </span>
+        `;
+
+        // Delete user
+        li.querySelector(".deleteBtn").onclick = async () => {
+          await fetch(`/api/users/${user._id}`, { method: "DELETE" });
+          fetchUsers();
+        }
+
+        // Edit user
+        li.querySelector(".editBtn").onclick = () => {
+          window.location.href = `addUser.html?id=${user._id}`;
+        }
+
+        userList.appendChild(li);
+      });
+    }
+
+    fetchUsers();
+  </script>
+</body>
+</html>
